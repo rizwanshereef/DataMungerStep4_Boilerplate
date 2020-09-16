@@ -8,6 +8,7 @@ import java.io.IOException;
 import com.stackroute.datamunger.query.DataTypeDefinitions;
 import com.stackroute.datamunger.query.Header;
 
+
 public class CsvQueryProcessor extends QueryProcessingEngine {
     private String fileName;
     /*
@@ -16,6 +17,8 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
      */
 
     public CsvQueryProcessor(String fileName) throws FileNotFoundException {
+        FileReader filereader = new FileReader(fileName);
+
         this.fileName = fileName;
     }
 
@@ -79,20 +82,24 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
         // checking for date format yyyy-mm-dd
         String[] data = null;
         int index = 0;
-        DataTypeDefinitions dataType = new DataTypeDefinitions();
-        FileReader file = null;
+
+        FileReader file;
         try {
             file = new FileReader(fileName);
         } catch (FileNotFoundException ex) {
             file = new FileReader("data/ipl.csv");
         }
         BufferedReader reader = new BufferedReader(file);
+
         /*Skipping the 1st line and selecting 2nd line*/
         reader.readLine();
         String firstRow = reader.readLine();
+
         /*split the 1st row to string array*/
         data = firstRow.split(",", -1);
         String[] arrOut = new String[data.length];
+
+        /*Checking each column for Object,Integer,Double,Date*/
         for (int i = 0; i < data.length; i++) {
             if (data[i].trim().isEmpty()) {
                 arrOut[index] = "java.lang.Object";
@@ -113,6 +120,7 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
                 index++;
             }
         }
+        DataTypeDefinitions dataType = new DataTypeDefinitions();
         dataType.setDataTypes(arrOut);
         file.close();
         reader.close();
